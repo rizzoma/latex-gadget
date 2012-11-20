@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+    <ModulePrefs title="Equation gadget">
+        <Require feature="wave" />
+        <Require feature="dynamic-height" />
+    </ModulePrefs>
+    <Content type="html">
+    <![CDATA[
+        <html>
+            <script type="text/javascript">
+                function onSubmit() {
+                    var equation = document.getElementById('equation').value;
+                    wave.getState().submitDelta({equation: equation});
+                }
+
+                function getImage() {
+                    var div = document.getElementById('content-div');
+                    if (!div.children.length) {
+                        var image = new Image();
+                        image.onload = function() {
+                            gadgets.window.adjustHeight();
+                        };
+                        div.appendChild(image);
+                    }
+                    return div.children[0];
+                }
+
+                function stateUpdated() {
+                    var state = wave.getState();
+                    if (!state.get('equation')) {
+                        state.submitDelta({equation: 'T _E ^X'});
+                    } else {
+                        var equation = state.get('equation');
+                        var encoded = encodeURIComponent(equation);
+                        var image = getImage();
+                        image.src = 'http://chart.apis.google.com/chart?cht=tx&chf=bg,i,FFFFFFF0&chco=000000&chl=' + encoded;
+                        document.getElementById('equation').value = equation;
+                    }
+                }
+
+                function init() {
+                    if (wave && wave.isInWaveContainer()) {
+                        wave.setStateCallback(stateUpdated);
+                    }
+                }
+
+                gadgets.util.registerOnLoadHandler(init);
+            </script>
+            <body style="padding: 3px">
+                <div id="content-div"></div>
+                <form onsubmit="onSubmit(); return false;">
+                    <input id="equation" type="text" value="Enter the equation here">
+                    <input type="submit" value="Done">
+                </form>
+            </body>
+        </html>
+    ]]>
+    </Content>
+</Module>
