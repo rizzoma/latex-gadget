@@ -1,56 +1,175 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Module>
-    <ModulePrefs title="Equation gadget">
+    <ModulePrefs title="LaTeX gadget" title_url="https://github.com/rizzoma/latex-gadget" author="Mikhail Demerzov" author_email="demerzov@gmail.com">
         <Require feature="wave" />
         <Require feature="dynamic-height" />
     </ModulePrefs>
     <Content type="html">
     <![CDATA[
+        <!DOCTYPE html>
         <html>
-            <script type="text/javascript">
-                function onSubmit() {
-                    var equation = document.getElementById('equation').value;
-                    wave.getState().submitDelta({equation: equation});
+            <style>
+                * {
+                    padding: 0;
+                    margin: 0;
                 }
 
-                function getImage() {
-                    var div = document.getElementById('content-div');
-                    if (!div.children.length) {
-                        var image = new Image();
-                        image.onload = function() {
-                            gadgets.window.adjustHeight();
-                        };
-                        div.appendChild(image);
+                body {
+                    padding: 3px;
+                }
+
+                .content {
+                    cursor: pointer;
+                }
+
+                .content.loading {
+                    background: left center no-repeat url(data:image/gif;base64,R0lGODlhEAAQAPYAAP///wAAAPr6+pKSkoiIiO7u7sjIyNjY2J6engAAAI6OjsbGxjIyMlJSUuzs7KamppSUlPLy8oKCghwcHLKysqSkpJqamvT09Pj4+KioqM7OzkRERAwMDGBgYN7e3ujo6Ly8vCoqKjY2NkZGRtTU1MTExDw8PE5OTj4+PkhISNDQ0MrKylpaWrS0tOrq6nBwcKysrLi4uLq6ul5eXlxcXGJiYoaGhuDg4H5+fvz8/KKiohgYGCwsLFZWVgQEBFBQUMzMzDg4OFhYWBoaGvDw8NbW1pycnOLi4ubm5kBAQKqqqiQkJCAgIK6urnJyckpKSjQ0NGpqatLS0sDAwCYmJnx8fEJCQlRUVAoKCggICLCwsOTk5ExMTPb29ra2tmZmZmhoaNzc3KCgoBISEiIiIgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCAAAACwAAAAAEAAQAAAHaIAAgoMgIiYlg4kACxIaACEJCSiKggYMCRselwkpghGJBJEcFgsjJyoAGBmfggcNEx0flBiKDhQFlIoCCA+5lAORFb4AJIihCRbDxQAFChAXw9HSqb60iREZ1omqrIPdJCTe0SWI09GBACH5BAkIAAAALAAAAAAQABAAAAdrgACCgwc0NTeDiYozCQkvOTo9GTmDKy8aFy+NOBA7CTswgywJDTIuEjYFIY0JNYMtKTEFiRU8Pjwygy4ws4owPyCKwsMAJSTEgiQlgsbIAMrO0dKDGMTViREZ14kYGRGK38nHguHEJcvTyIEAIfkECQgAAAAsAAAAABAAEAAAB2iAAIKDAggPg4iJAAMJCRUAJRIqiRGCBI0WQEEJJkWDERkYAAUKEBc4Po1GiKKJHkJDNEeKig4URLS0ICImJZAkuQAhjSi/wQyNKcGDCyMnk8u5rYrTgqDVghgZlYjcACTA1sslvtHRgQAh+QQJCAAAACwAAAAAEAAQAAAHZ4AAgoOEhYaCJSWHgxGDJCQARAtOUoQRGRiFD0kJUYWZhUhKT1OLhR8wBaaFBzQ1NwAlkIszCQkvsbOHL7Y4q4IuEjaqq0ZQD5+GEEsJTDCMmIUhtgk1lo6QFUwJVDKLiYJNUd6/hoEAIfkECQgAAAAsAAAAABAAEAAAB2iAAIKDhIWGgiUlh4MRgyQkjIURGRiGGBmNhJWHm4uen4ICCA+IkIsDCQkVACWmhwSpFqAABQoQF6ALTkWFnYMrVlhWvIKTlSAiJiVVPqlGhJkhqShHV1lCW4cMqSkAR1ofiwsjJyqGgQAh+QQJCAAAACwAAAAAEAAQAAAHZ4AAgoOEhYaCJSWHgxGDJCSMhREZGIYYGY2ElYebi56fhyWQniSKAKKfpaCLFlAPhl0gXYNGEwkhGYREUywag1wJwSkHNDU3D0kJYIMZQwk8MjPBLx9eXwuETVEyAC/BOKsuEjYFhoEAIfkECQgAAAAsAAAAABAAEAAAB2eAAIKDhIWGgiUlh4MRgyQkjIURGRiGGBmNhJWHm4ueICImip6CIQkJKJ4kigynKaqKCyMnKqSEK05StgAGQRxPYZaENqccFgIID4KXmQBhXFkzDgOnFYLNgltaSAAEpxa7BQoQF4aBACH5BAkIAAAALAAAAAAQABAAAAdogACCg4SFggJiPUqCJSWGgkZjCUwZACQkgxGEXAmdT4UYGZqCGWQ+IjKGGIUwPzGPhAc0NTewhDOdL7Ykji+dOLuOLhI2BbaFETICx4MlQitdqoUsCQ2vhKGjglNfU0SWmILaj43M5oEAOwAAAAAAAAAAAA==);
+                    height: 30px;
+                }
+
+                .content.loading img {
+                    display: none;
+                }
+
+                .edit-equation {
+                    display: none;
+                    width: 300px;
+                }
+
+                .edit-equation textarea {
+                    display: block;
+                    font-size: 12px;
+                    font-family: monospace;
+                    width: 100%;
+                    height: 120px;
+                    resize: none;
+                }
+
+                .edit-equation input {
+                    margin-top: 1px;
+                }
+
+                .hide-editor {
+                    display: none;
+                }
+
+                .about-link {
+                    float: right;
+                    font-size: 12px;
+                }
+            </style>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+            <script>
+                var Gadget = function(updateEquation, updateHeight) {
+                    this._hasEquation = false;
+                    this._content = $('.content');
+                    this._editor = $('.edit-equation');
+                    this._updateEquation = updateEquation;
+                    this._updateHeight = updateHeight;
+                };
+
+                Gadget.prototype._getImageUrl = function(equation) {
+                    var encoded = encodeURIComponent(equation);
+                    return 'http://chart.apis.google.com/chart?cht=tx&chf=bg,i,FFFFFFF0&chco=000000&chl=' + encoded;
+                };
+
+                Gadget.prototype._updateContent = function(equation) {
+                    this._content.addClass('loading');
+                    this._updateHeight();
+                    var image = this._content.find('img');
+                    if (!image.length) {
+                        image = $('<img>').appendTo(this._content);
+                        image.load($.proxy(function() {
+                            this._content.removeClass('loading');
+                            this._updateHeight();
+                        }, this));
                     }
-                    return div.children[0];
-                }
+                    var url = this._getImageUrl(equation);
+                    image.attr('src', url);
+                };
 
-                function stateUpdated() {
-                    var state = wave.getState();
-                    if (!state.get('equation')) {
-                        state.submitDelta({equation: 'T _E ^X'});
+                Gadget.prototype._updateEditor = function(equation) {
+                    this._editor.find('textarea').val(equation);
+                    this._editor.find('.hide-editor').show();
+                };
+
+                Gadget.prototype._changeEditorVisibility = function(method) {
+                    this._editor[method]();
+                    this._updateHeight();
+                };
+
+                Gadget.prototype.onUpdate = function(equation) {
+                    if (equation) {
+                        this._hasEquation = true;
+                        this._updateContent(equation);
+                        this._updateEditor(equation);
                     } else {
-                        var equation = state.get('equation');
-                        var encoded = encodeURIComponent(equation);
-                        var image = getImage();
-                        image.src = 'http://chart.apis.google.com/chart?cht=tx&chf=bg,i,FFFFFFF0&chco=000000&chl=' + encoded;
-                        document.getElementById('equation').value = equation;
+                        this._changeEditorVisibility('show');
                     }
-                }
+                };
 
-                function init() {
-                    if (wave && wave.isInWaveContainer()) {
-                        wave.setStateCallback(stateUpdated);
+                Gadget.prototype._addClickListener = function() {
+                    this._content.click($.proxy(function() {
+                        this._changeEditorVisibility('toggle');
+                    }, this));
+                    this._editor.click($.proxy(function(event) {
+                        if ($(event.target).hasClass('hide-editor')) {
+                            this._changeEditorVisibility('hide');
+                        }
+                    }, this));
+                };
+
+                Gadget.prototype._addKeydownListener = function() {
+                    this._editor.keydown($.proxy(function(event) {
+                        if ((event.which == 10 || event.which == 13) && event.ctrlKey) {
+                            this._editor.submit();
+                            return false;
+                        }
+                        if (event.which == 27 && this._hasEquation) {
+                            this._changeEditorVisibility('hide');
+                            return false;
+                        }
+                    }, this));
+                };
+
+                Gadget.prototype._addSubmitListener = function() {
+                    this._editor.submit($.proxy(function(event) {
+                        var equation = this._editor.find('textarea').val();
+                        this._updateEquation(equation);
+                        return false;
+                    }, this));
+                };
+
+                Gadget.prototype.init = function() {
+                    this._addClickListener();
+                    this._addKeydownListener();
+                    this._addSubmitListener();
+                };
+
+                gadgets.util.registerOnLoadHandler(function() {
+                    if (!wave || !wave.isInWaveContainer()) {
+                        return;
                     }
-                }
-
-                gadgets.util.registerOnLoadHandler(init);
+                    var gadget = new Gadget(function(equation) {
+                        var state = wave.getState();
+                        state.submitDelta({equation: equation});
+                    }, function() {
+                        gadgets.window.adjustHeight();
+                    });
+                    wave.setStateCallback(function() {
+                        var state = wave.getState();
+                        gadget.onUpdate(state.get('equation'));
+                    });
+                    gadget.init();
+                });
             </script>
-            <body style="padding: 3px">
-                <div id="content-div"></div>
-                <form onsubmit="onSubmit(); return false;">
-                    <input id="equation" type="text" value="Enter the equation here">
-                    <input type="submit" value="Done">
+            <body>
+                <div class="content" title="Click to toggle the edit form"></div>
+                <form class="edit-equation">
+                    <textarea name="equation" placeholder="Enter the equation here"></textarea>
+                    <a href="https://github.com/rizzoma/latex-gadget" target="_blank" class="about-link">about</a>
+                    <input type="submit" value="Save (Ctrl+Enter)">
+                    <input type="button" value="Hide editor (Esc)" class="hide-editor">
                 </form>
             </body>
         </html>
