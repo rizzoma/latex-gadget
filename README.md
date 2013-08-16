@@ -1,5 +1,11 @@
-# LaTeX Gadget for Rizzoma
+# LaTeX Gadget for Rizzoma/OpenSocial
 
+Gadget for inserting mathematical formulas.
+
+## Users
+[How to use instructions](https://rizzoma.com/topic/101a6e3b0cfeb5734ce65b10fc85ffde/)
+
+## Developers
 This is small example how to create a simple gadget using the wave feature.  
 The gadget will take an input of LaTeX and render it as a picture.
 
